@@ -3,7 +3,9 @@ package com.qulron.inventory_service.products.controller;
 import com.qulron.inventory_service.products.dto.ProductDTO;
 import com.qulron.inventory_service.products.entity.Product;
 import com.qulron.inventory_service.products.service.ProductService;
+import com.qulron.inventory_service.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,9 +25,10 @@ public class ProductController {
 
     //CREATE a new product
     @PostMapping
-    public ResponseEntity<ProductDTO> addProduct(@RequestBody ProductDTO dto) {
+    public ResponseEntity<ApiResponse> addProduct(@RequestBody ProductDTO dto) {
         ProductDTO savedProduct = productService.addProduct(dto);
-        return ResponseEntity.ok(savedProduct);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse("Product Added Successfully",savedProduct));
     }
 
     //READ * All products
