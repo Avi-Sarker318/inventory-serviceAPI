@@ -1,7 +1,6 @@
 package com.qulron.inventory_service.products.controller;
 
 import com.qulron.inventory_service.products.dto.ProductDTO;
-import com.qulron.inventory_service.products.entity.Product;
 import com.qulron.inventory_service.products.service.ProductService;
 import com.qulron.inventory_service.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,31 +26,39 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ApiResponse> addProduct(@RequestBody ProductDTO dto) {
         ProductDTO savedProduct = productService.addProduct(dto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse("Product Added Successfully",savedProduct));
+        return ResponseEntity.ok(new ApiResponse("Product Added Successfully",savedProduct));
     }
 
     //READ * All products
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        return ResponseEntity.ok(productService.getProducts());
+    public ResponseEntity<ApiResponse> getAllProducts() {
+        List<ProductDTO> products = productService.getProducts();
+        return ResponseEntity.ok(new ApiResponse("Products Retrieved Successfully",products));
     }
     //READ * one product by ID
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable long id) {
-        return ResponseEntity.ok(productService.getProduct(id));
+    public ResponseEntity<ApiResponse> getProductById(@PathVariable long id) {
+        ProductDTO product = productService.getProduct(id);
+        return ResponseEntity.ok(new ApiResponse("Product Retrieved Successfully", product));
     }
     //UPDATE * one product by ID
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable long id, @RequestBody ProductDTO dto) {
+    public ResponseEntity<ApiResponse> updateProduct(@PathVariable long id, @RequestBody ProductDTO dto) {
         ProductDTO updated = productService.updateProduct(id, dto);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(new ApiResponse("Product Updated Successfully", updated));
     }
     //DELETE * one product by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable long id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok("Product deleted Successfully");
+    }
+    //Find low inventory
+    @GetMapping("/low")
+    //http://localhost:8000/api/products/low?threshold=3
+    public ResponseEntity<List<ProductDTO>> getLowInventory(@RequestParam int threshold) {
+        List<ProductDTO> lowStock = productService.getLowInventoryProducts(threshold);
+        return ResponseEntity.ok(lowStock);
     }
 
 

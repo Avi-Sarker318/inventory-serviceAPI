@@ -3,10 +3,12 @@ package com.qulron.inventory_service.products.service;
 import com.qulron.inventory_service.products.dto.ProductDTO;
 import com.qulron.inventory_service.products.entity.Product;
 import com.qulron.inventory_service.products.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -19,9 +21,20 @@ public class ProductService {
 
     //* ADD
     public ProductDTO addProduct(ProductDTO dto) {
-        log.info("Adding product: {}", dto.getName());
+        //validation
+        if(dto.getPrice() == null || dto.getPrice().compareTo(BigDecimal.ZERO)<0) {
+            throw new IllegalArgumentException("Price Cannot Be Less Than 0");
+        }
+        if(dto.getName() == null || dto.getName().trim().isEmpty()) {
+            throw new EntityNotFoundException("Name Cannot Be Empty");
+        }
+        if(dto.getQuantity() == 0) {
+            throw new EntityNotFoundException("Quantity Cannot Be Zero");
+        }
+
+        log.info("Adding product: {}", dto.getName().trim());
         Product product = Product.builder()
-                .name(dto.getName())
+                .name(dto.getName().trim())
                 .price(dto.getPrice())
                 .quantity(dto.getQuantity())
                 .build();
@@ -29,16 +42,22 @@ public class ProductService {
         return mapToDTO(saved);
     }
     //* GET ALL
-    public List<Product> getProducts() {
+    public List<ProductDTO> getProducts() {
         log.info("Fetching all Products...");
-        return productRepository.findAll();
+        List<Product> products = productRepository.findAll();
+
+        if(products.isEmpty()) {
+            throw new EntityNotFoundException("No Products found in the database");
+        }
+
+        return products.stream().map(this::mapToDTO).toList();
 
     }
     //* GET PRODUCT
     public ProductDTO getProduct(long id) {
         log.info("Fetching a product by id");
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found by id"+id));
+                .orElseThrow(() -> new EntityNotFoundException("Product not found by id"+id));
         return mapToDTO(product);
 
 
@@ -47,9 +66,19 @@ public class ProductService {
     public ProductDTO updateProduct(long id,ProductDTO dto) {
         log.info("Updating student with ID {}", id);
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id"+id));
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id"+id));
 
-        product.setName(dto.getName());
+        if(dto.getPrice() == null || dto.getPrice().compareTo(BigDecimal.ZERO)<0) {
+            throw new IllegalArgumentException("Price Cannot Be Less Than 0");
+        }
+        if(dto.getName() == null || dto.getName().trim().isEmpty()) {
+            throw new EntityNotFoundException("Name Cannot Be Empty");
+        }
+        if(dto.getQuantity() == 0) {
+            throw new EntityNotFoundException("Quantity Cannot Be Zero");
+        }
+
+        product.setName(dto.getName().trim());
         product.setPrice(dto.getPrice());
         product.setQuantity(dto.getQuantity());
 
@@ -61,9 +90,17 @@ public class ProductService {
     public void deleteProduct(long id) {
         log.info("Deleting product with Id");
         if(!productRepository.existsById(id)) {
-            throw new RuntimeException("product not found with Id");
+            throw new EntityNotFoundException("product not found with Id");
         }
         productRepository.deleteById(id);
+    }
+
+    //finding lowest inventory of products
+    public List<ProductDTO> getLowInventoryProducts(int threshold) {
+        return productRepository.findByQuantityLessThan(threshold)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
     //* UTILITY
