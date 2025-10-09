@@ -4,7 +4,6 @@ import com.qulron.inventory_service.products.dto.ProductDTO;
 import com.qulron.inventory_service.products.service.ProductService;
 import com.qulron.inventory_service.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
