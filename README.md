@@ -15,11 +15,11 @@ The current Version include
   DTO,
   config,
   response,
-  and repository
-  Setup GlobalHandleException which is implemented and tested
-  Setup a simple CorsConfig that is implemented but not tested
-  Setup a simple RateLimiter that is implemented and tested
-  Added a Repository where user can look for low quantity based on the threshold that was inserted as a parameter.
+  and repository.
+  Seting up GlobalHandleException which is implemented and tested.
+  Setting up a simple CorsConfig that is implemented but not tested.
+  Seting up a simple RateLimiter that is implemented and tested.
+  I also added as part of the extra deliverable a GetMapping where user can look for low quantity based on the threshold that was inserted as a parameter.
 
 
 Features:
