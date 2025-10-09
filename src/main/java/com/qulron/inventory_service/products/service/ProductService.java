@@ -22,14 +22,11 @@ public class ProductService {
     //* ADD
     public ProductDTO addProduct(ProductDTO dto) {
         //validation
-        if(dto.getPrice() == null || dto.getPrice().compareTo(BigDecimal.ZERO)<0) {
+        if(dto.getPrice().compareTo(BigDecimal.ZERO)<0) {
             throw new IllegalArgumentException("Price Cannot Be Less Than 0");
         }
         if(dto.getName() == null || dto.getName().trim().isEmpty()) {
             throw new EntityNotFoundException("Name Cannot Be Empty");
-        }
-        if(dto.getQuantity() == 0) {
-            throw new EntityNotFoundException("Quantity Cannot Be Zero");
         }
 
         log.info("Adding product: {}", dto.getName().trim());
