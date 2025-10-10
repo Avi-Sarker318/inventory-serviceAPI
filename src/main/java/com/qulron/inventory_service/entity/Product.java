@@ -1,4 +1,4 @@
-package com.qulron.inventory_service.products.entity;
+package com.qulron.inventory_service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

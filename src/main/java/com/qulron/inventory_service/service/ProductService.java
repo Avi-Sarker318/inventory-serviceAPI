@@ -1,8 +1,8 @@
-package com.qulron.inventory_service.products.service;
+package com.qulron.inventory_service.service;
 
-import com.qulron.inventory_service.products.dto.ProductDTO;
-import com.qulron.inventory_service.products.entity.Product;
-import com.qulron.inventory_service.products.repository.ProductRepository;
+import com.qulron.inventory_service.dto.ProductDTO;
+import com.qulron.inventory_service.entity.Product;
+import com.qulron.inventory_service.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

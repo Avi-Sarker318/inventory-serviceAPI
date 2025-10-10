@@ -1,4 +1,4 @@
-package com.qulron.inventory_service.products.config;
+package com.qulron.inventory_service.config;
 
 
 import org.springframework.context.annotation.Configuration;

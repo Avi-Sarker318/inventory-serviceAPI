@@ -1,7 +1,7 @@
-package com.qulron.inventory_service.products.controller;
+package com.qulron.inventory_service.controller;
 
-import com.qulron.inventory_service.products.dto.ProductDTO;
-import com.qulron.inventory_service.products.service.ProductService;
+import com.qulron.inventory_service.dto.ProductDTO;
+import com.qulron.inventory_service.service.ProductService;
 import com.qulron.inventory_service.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductController {
     /**
