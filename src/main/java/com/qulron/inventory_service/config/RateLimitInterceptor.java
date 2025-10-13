@@ -30,17 +30,16 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String ip = getClientIp(request);
         String path = request.getRequestURI();
-        if (!globalBucket.tryConsume(1)) {
-            write(response, "global rate limit exceeded");
-            return false;
-        }
-
         if (path != null && path.contains("/products")) {
             Bucket bucket = ipBuckets.computeIfAbsent(ip, k -> createIpBucket());
             if (!bucket.tryConsume(1)) {
                 write(response, "ip rate limit exceeded");
                 return false;
             }
+        }
+        if (!globalBucket.tryConsume(1)) {
+            write(response, "global rate limit exceeded");
+            return false;
         }
         return true;
     }
