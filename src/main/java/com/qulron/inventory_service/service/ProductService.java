@@ -25,9 +25,6 @@ public class ProductService {
         if(dto.getPrice().compareTo(BigDecimal.ZERO)<0) {
             throw new IllegalArgumentException("Price Cannot Be Less Than 0");
         }
-        if(dto.getName() == null || dto.getName().trim().isEmpty()) {
-            throw new EntityNotFoundException("Name Cannot Be Empty");
-        }
 
         log.info("Adding product: {}", dto.getName().trim());
         Product product = Product.builder()
@@ -67,9 +64,6 @@ public class ProductService {
 
         if(dto.getPrice().compareTo(BigDecimal.ZERO)<0) {
             throw new IllegalArgumentException("Price Cannot Be Less Than 0");
-        }
-        if(dto.getName() == null || dto.getName().trim().isEmpty()) {
-            throw new EntityNotFoundException("Name Cannot Be Empty");
         }
 
         product.setName(dto.getName().trim());

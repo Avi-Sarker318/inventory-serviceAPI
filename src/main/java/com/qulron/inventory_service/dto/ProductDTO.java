@@ -17,9 +17,10 @@ public class ProductDTO {
     private String name;
 
     @NotNull(message = "price cannot be null")
-    @NotBlank(message = "price cannot be empty")
+    @Min(value = 0, message = "price cannot be less than 0")
     private BigDecimal price;
-    
+
+    @Min(value = 0, message = "quantity cannot be less than 0")
     private int quantity;
 
 }

@@ -3,6 +3,7 @@ package com.qulron.inventory_service.controller;
 import com.qulron.inventory_service.dto.ProductDTO;
 import com.qulron.inventory_service.service.ProductService;
 import com.qulron.inventory_service.response.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class ProductController {
 
     //CREATE a new product
     @PostMapping
-    public ResponseEntity<ApiResponse> addProduct(@RequestBody ProductDTO dto) {
+    public ResponseEntity<ApiResponse> addProduct(@Valid @RequestBody ProductDTO dto) {
         ProductDTO savedProduct = productService.addProduct(dto);
         return ResponseEntity.ok(new ApiResponse("Product Added Successfully",savedProduct));
     }
@@ -42,7 +43,7 @@ public class ProductController {
     }
     //UPDATE * one product by ID
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateProduct(@PathVariable long id, @RequestBody ProductDTO dto) {
+    public ResponseEntity<ApiResponse> updateProduct(@PathVariable long id, @Valid @RequestBody ProductDTO dto) {
         ProductDTO updated = productService.updateProduct(id, dto);
         return ResponseEntity.ok(new ApiResponse("Product Updated Successfully", updated));
     }
