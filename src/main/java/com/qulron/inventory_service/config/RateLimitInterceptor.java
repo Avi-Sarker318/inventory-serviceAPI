@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,50 +18,56 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Component
 public class RateLimitInterceptor implements HandlerInterceptor {
+    private final Bucket globalBucket =
+            Bucket.builder()
+                    .addLimit(Bandwidth.classic(10,Refill.greedy(10, Duration.ofMinutes(1))))
+                    .build();
+
     private final Map<String, Bucket> ipBuckets = new ConcurrentHashMap<>();
-    private Bucket globalBucket = Bucket.builder()
-            .addLimit(Bandwidth.classic(5,Refill.greedy(5, Duration.ofMinutes(1))))
-            .build();
 
-
-    private Bucket createNewBucket() {
-        Bandwidth limit = Bandwidth.classic(5,Refill.greedy(5, Duration.ofMinutes(1)));
-        return Bucket.builder().addLimit(limit).build();
-    }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws
-            Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String ip = getClientIp(request);
         String path = request.getRequestURI();
-
         if (!globalBucket.tryConsume(1)) {
-            log.warn("Global rate limit reached for {} from {}", ip, path);
-            response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-            response.getWriter().write("Too many Requests. Please try again later");
+            write(response, "global rate limit exceeded");
             return false;
         }
 
-        if (path.contains("/products")) {
-            Bucket bucket = ipBuckets.computeIfAbsent(ip, k -> createNewBucket());
+        if (path != null && path.contains("/products")) {
+            Bucket bucket = ipBuckets.computeIfAbsent(ip, k -> createIpBucket());
             if (!bucket.tryConsume(1)) {
-                log.warn("ip rate limit exceeded");
-                response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-                response.getWriter().write("Too many Request, try again later");
+                write(response, "ip rate limit exceeded");
                 return false;
             }
         }
         return true;
     }
+
+    private Bucket createIpBucket() {
+        return Bucket.builder()
+                .addLimit(Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1))))
+                .build();
+    }
     private String getClientIp(HttpServletRequest request) {
         String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isEmpty()){
+        if (forwarded != null && !forwarded.isEmpty() && !"unknown".equalsIgnoreCase(forwarded)) {
             return forwarded.split(",")[0].trim();
         }
-        return request.getRemoteUser();
+        String ip = request.getHeader("X-Real-IP");
+        if(ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip.trim();
+        }
+        return request.getRemoteAddr();
 
     }
 
+    private void write(HttpServletResponse response, String message) throws Exception{
+        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+        response.setHeader("Retry-After", "60");
+        response.getWriter().write("Too many requests! " + message);
+    }
 
 
 }
