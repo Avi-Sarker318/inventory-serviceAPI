@@ -1,35 +1,44 @@
-10-10-25
+10-13-2025
 
-This project is based on Spring Boot- Based Inventory Management API that allows basic CRUD operations for product data.
-Its designed following clean architecture principles - separating:
-controller,
-services,
-entities,
-DTO,
-and repository
+Author 
+Avi
 
-The current Version include
-  controller,
-  service,
-  entities,
-  DTO,
-  config,
-  response,
-  and repository.
-  Seting up GlobalHandleException which is implemented and tested.
-  Setting up a simple CorsConfig that is implemented but not tested.
-Working on Rate Limit GlobalBucket and IPBucket. Tested but not working. working on errors.
-will start dealing with fingerprintdevices as well have not started
-  I also added as part of the extra deliverable a GetMapping where user can look for low quantity based on the threshold that was inserted as a parameter.
+How to Run the Project
+
+1. Prerequisites
+   Java 17+ Installed
+     Verify with: java --version
+   Maven installed
+     Verify with: mvn -v
+   Postgres running locally(or on your VM)
+     You'll need a database created(e.g., inventorydb)
+2. Clone the Repository
+   git clone https://github.com/Avi-Sarker318/inventory-serviceAPI.git
+   cd inventory-serviceAPI
+3. Configure Database Connection
+   Open the file
+     src/main/resources/application.properties
+         spring.datasource.url=jdbc:postgresql://localhost:5432/inventorydb
+         spring.datasource.username=postgres
+         spring.datasource.password=yourpassword
+         spring.jpa.hibernate.ddl-auto=update
+         spring.jpa.show-sql=true
+4. Build the Project
+     mvn clean install
+5. Run the Applicaiton
+     mvn spring-boot:run
+     or just run it on intellij
+6. Access the API
+     open your browser or postman and test
+       http://localhost:8000/api/products
+   POST       Create a product          /api/products
+   GET        Read all products         /api/products  // get by id /api/products/{id}
+   PUT        Update a Product          /api/products/{id}
+   DELETE     Delete a Product          /api/products/{id}
 
 
-Features:
-  CRUD-Create, Read, Update, and Delete endpoints for Product.
-  DTO mapping for clean data transfer.
-  Lombok annotations for boilerpoint reduction.
-  Basic validations for product.
-  Basic error input handlers for product
-
-Next Steps:
-Trying to make rate limiter to work and get fingerprint
-
+Notes:
+I added rate limiter, fingerprintdevice, and webconfig.
+I used webconfig to get my code to read the limiter first before moving to the controller
+the limit for global and ip is 10 and it will reset every minute.
+I added the fingerprintdevice to show useragents that are using the api and fetching data from it.
